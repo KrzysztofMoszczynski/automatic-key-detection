@@ -2,6 +2,7 @@ from PythonSrc import hdf5_getters as getters
 import os
 import glob
 import shutil
+import pandas as pd
 
 
 def get_one_song():
@@ -43,3 +44,13 @@ def save_all_songs_with_key_over_70_percent(basedir, ext='.h5'):
                 shutil.copyfile(file, "datasets/chosenFiles/"+os.path.basename(file))
             h5.close()
     return count
+
+
+def test_pandas():
+    data_frame = pd.DataFrame(columns=['arr', 'key'])
+    first_arr = [[1, 2], [3, 4]]
+    keys = ['A', 'B']
+    for index in range(len(first_arr)):
+        data_frame.loc[index] = [first_arr[index], keys[index]]
+
+    print(data_frame)

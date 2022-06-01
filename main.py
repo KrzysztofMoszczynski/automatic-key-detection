@@ -5,4 +5,5 @@ from utils import test, prepare_data
 #print(prepare_data.normalize_histogram(histogram))
 
 
-print(test.count_all_songs_with_key_over_given_percent("datasets/MillionSongSubset", 80))
+#print(test.count_all_songs_with_key_over_given_percent("datasets/MillionSongSubset", 80))
+prepare_data.save_songs_with_key_confidence_over_given_percentage(0.8)
