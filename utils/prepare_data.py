@@ -1,7 +1,7 @@
 import numpy
 import numpy as np
 from PythonSrc import hdf5_getters as getters
-from constants import DATASET_PATH, OUTPUT_CSV_PATH
+from constants import DATASET_PATH, OUTPUT_CSV_PATH, INPUT_70_PATH, INPUT_70_TRAIN_PATH, INPUT_70_TEST_PATH
 import os
 import glob
 import pandas as pd
@@ -28,8 +28,9 @@ def transpose_song(histogram, key, mode):
 
 
 #leaves values 0-11 for minor mode and 30-41 for major mode
+#leaves values 0-11 for minor mode and 12-23 for major mode
 def join_keys_and_modes(key, mode):
-    return key + mode * 30
+    return key + mode * 12
 
 
 def make_histogram(chromas):
@@ -81,7 +82,21 @@ def save_songs_with_key_confidence_over_given_percentage(percentage, ext='.h5'):
     songs_to_save.to_csv(f'datasets/songs_{int(percentage * 100)}_percent_confidence.csv', index=False)
 
 
-def get_songs():
-    songs = pd.read_csv(OUTPUT_CSV_PATH)
+def get_all_songs():
+    songs = pd.read_csv(INPUT_70_PATH)
     return songs
 
+
+def get_train_test_sets():
+    train = pd.read_csv(INPUT_70_TRAIN_PATH)
+    test = pd.read_csv(INPUT_70_TEST_PATH)
+    return train, test
+
+
+def split_train_test(ratio_test=0.2):
+    songs = get_all_songs()
+    msk = np.random.rand(len(songs)) < ratio_test
+    songs_test = songs[msk]
+    songs_train = songs[~msk]
+    songs_test.to_csv('datasets/songs_70_percent_confidence_test.csv', index=False)
+    songs_train.to_csv('datasets/songs_70_percent_confidence_train.csv', index=False)

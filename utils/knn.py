@@ -2,7 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import time
 from ast import literal_eval
 import numpy as np
-from utils.functions import flatten_df_arr
+from utils.functions import flatten_df_arr, split_set_randomly
 from constants import MIN_K_IMPROVEMENT
 from utils.validate_models import count_evaluation_score
 
@@ -23,7 +23,7 @@ class KNeighbours():
 
     def train_k(self):
         start_time = time.time()
-        data_folds = self.split_set_randomly()
+        data_folds = split_set_randomly(self.data, self.batches)
         best_k = 0
         best_accuracy = 0
         best_score = 0
@@ -69,9 +69,3 @@ class KNeighbours():
         accuracy = knn.score(test_features.tolist(), test_labels.tolist())
         print(f'Accuracy: {accuracy}')
 
-
-    def split_set_randomly(self):
-        data = self.data.copy()
-        data = data.sample(n=len(data.index)).reset_index(drop=True)
-        data_folds = np.array_split(data, self.batches)
-        return data_folds
