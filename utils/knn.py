@@ -4,7 +4,7 @@ from ast import literal_eval
 import numpy as np
 from utils.functions import flatten_df_arr, split_set_randomly
 from constants import MIN_K_IMPROVEMENT
-from utils.validate_models import count_evaluation_score
+import utils.validate_models as validate_models
 
 
 class KNeighbours():
@@ -42,7 +42,7 @@ class KNeighbours():
                 test_labels = test_fold['key']
                 knn.fit(training_features.tolist(), training_labels.tolist())
                 predictions = knn.predict(test_features.tolist())
-                score = count_evaluation_score(predictions, test_labels.tolist())
+                score = validate_models.count_evaluation_score(predictions, test_labels.tolist())
                 accuracy = knn.score(test_features.tolist(), test_labels.tolist())
                 k_score = k_score + score
                 k_accuracy = k_accuracy + accuracy
@@ -65,7 +65,7 @@ class KNeighbours():
         test_labels = test_data['key']
         knn.fit(training_features.tolist(), training_labels.tolist())
         predictions = knn.predict(test_features.tolist())
-        evaluation_score = count_evaluation_score(predictions, test_labels.tolist())
+        evaluation_score = validate_models.count_evaluation_score(predictions, test_labels.tolist())
         accuracy = knn.score(test_features.tolist(), test_labels.tolist())
         print(f'Accuracy: {accuracy}')
 

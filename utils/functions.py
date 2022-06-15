@@ -11,7 +11,8 @@ def flatten_arr(arr):
         return_arr += element
     return return_arr
 
-def map_labes_to_keys(labels):
+
+def map_labels_to_keys(labels):
     keys = []
     labels_it = labels.copy()
     for label in labels_it:

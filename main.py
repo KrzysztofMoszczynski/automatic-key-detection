@@ -1,5 +1,6 @@
 import pandas as pd
 from utils import test, prepare_data, knn, validate_models, train, models
+from constants import BEST_TRAIN_MODEL
 
 #histogram = prepare_data.make_histogram("datasets/chosenFiles/TRAAAAW128F429D538.h5")
 #print(prepare_data.normalize_histogram(histogram))
@@ -11,7 +12,9 @@ from utils import test, prepare_data, knn, validate_models, train, models
 
 
 train_data, test_data = prepare_data.get_train_test_sets()
-train.train_the_best_model(train_data, 5)
+
+train.train_model(BEST_TRAIN_MODEL, train_data, lr=0.01)
+#train.find_the_best_model(train_data, 5, train_best_model=True)
 #print(len(train_data), len(test_data))
 #knn = knn.KNeighbours(train_data, 15)
 #knn.train_k()

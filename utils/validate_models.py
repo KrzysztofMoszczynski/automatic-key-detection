@@ -2,6 +2,9 @@ import time
 from utils import knn
 from constants import BEST_K
 from sklearn.model_selection import train_test_split
+import torch
+from utils.train import validate
+import numpy as np
 
 
 def validate_knn(data):
@@ -45,5 +48,34 @@ def count_evaluation_score(predicted_labels, true_labels):
             score = score + 0.2
     evaluation_score = score/len(true_labels)
     return evaluation_score
+
+
+
+def predict_test_dl(model, data):
+    y_pred = []
+    y_true = []
+    for i, (pitches, keys) in enumerate(data):
+        pitches = pitches.cuda()
+        x = model(pitches.float())
+        value, pred = torch.max(x, 1)
+        pred = pred.data.cpu()
+        y_pred.extend(list(pred.numpy()))
+        y_true.extend(list(keys.numpy()))
+    accuracy = float(validate(model, data))
+    return np.array(y_pred), np.array(y_true), accuracy
+
+
+def predict_training_dl(model, data):
+    y_pred = []
+    y_true = []
+    for i, (pitches, keys) in enumerate(data):
+        pitches = pitches.cuda()
+        x = model(pitches.float())
+        value, pred = torch.max(x, 1)
+        pred = pred.data.cpu()
+        y_pred.extend(list(pred.numpy()))
+        y_true.extend(list(keys.numpy()))
+    accuracy = float(validate(model, data))
+    return np.array(y_pred), np.array(y_true), accuracy
 
 
