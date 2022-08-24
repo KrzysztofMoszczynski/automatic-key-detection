@@ -11,14 +11,16 @@ from constants import BEST_TRAIN_MODEL
 #prepare_data.split_train_test()
 
 
-train_data, test_data = prepare_data.get_train_test_sets()
+train_data, test_data = prepare_data.get_train_test_start_end_sets()
 
-train.train_model(BEST_TRAIN_MODEL, train_data, lr=0.01)
+#train.train_model(BEST_TRAIN_MODEL, train_data, lr=0.01)
 #train.find_the_best_model(train_data, 5, train_best_model=True)
 #print(len(train_data), len(test_data))
-#knn = knn.KNeighbours(train_data, 15)
-#knn.train_k()
+knn = knn.KNeighbours(train_data, 10)
+#knn.validate_knn(test_data)
+knn.train_k()
 
+#data = prepare_data.get_all_songs()
 #validate_models.validate_random_song(data)
 
 #validate_models.validate_knn(data)

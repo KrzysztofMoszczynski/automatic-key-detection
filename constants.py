@@ -3,11 +3,14 @@ import utils.models as models
 DATASET_PATH = "datasets/MillionSongSubset"
 OUTPUT_CSV_PATH = "datasets/songs.csv"
 INPUT_70_PATH = "datasets/songs_70_percent_confidence.csv"
+INPUT_70_START_END_PATH = "datasets/songs_70_percent_confidence_start_end.csv"
 INPUT_70_TRAIN_PATH = "datasets/songs_70_percent_confidence_train.csv"
 INPUT_70_TEST_PATH = "datasets/songs_70_percent_confidence_test.csv"
+INPUT_70_START_END_TRAIN_PATH = "datasets/songs_70_percent_confidence_start_end_train.csv"
+INPUT_70_START_END_TEST_PATH = "datasets/songs_70_percent_confidence_start_end_test.csv"
 MODELS_PATH = "models"
 MIN_K_IMPROVEMENT = 0.001
-BEST_K = 10
+BEST_K = 7
 EPOCHS = 60
 CROSS_VAL_EPOCHS = 10
 CROSS_VAL_EPOCHS_NN = 20

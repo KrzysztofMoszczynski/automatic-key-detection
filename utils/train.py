@@ -4,17 +4,11 @@ import torch
 from torch import nn, optim
 import matplotlib.pyplot as plt
 import os
-import numpy as np
-import pandas as pd
-from constants import CROSS_VAL_EPOCHS, BATCH_SIZE, CROSS_VAL_EPOCHS_NN, EPOCHS, MODELS_PATH
-from utils.models import get_models_for_training, get_models
-from utils.functions import split_set_randomly, flatten_df_arr, transform_to_tensor
-import tensorflow as tf
-from keras.optimizers import SGD, Adam
-from keras.losses import sparse_categorical_crossentropy
+from constants import BATCH_SIZE, CROSS_VAL_EPOCHS_NN, EPOCHS, MODELS_PATH
+from utils.models import get_models_for_training
+from utils.functions import split_set_randomly, flatten_df_arr
 from torch.utils.data import DataLoader
 from utils.song_dataset import SongsDataset
-from ast import literal_eval
 from sklearn.model_selection import train_test_split
 import time
 
@@ -63,11 +57,11 @@ def find_the_best_model(data, folds, lr=0.001, train_best_model=False):
     best_model_accuracy = 0
     for model_obj in models:
         start_time = time.time()
-        print("Training model: ", model_obj.name)
+        print("Trening modelu: ", model_obj.name)
         model = model_obj.model
         model_accuracies = []
         for index, val_fold in enumerate(data_folds):
-            print(f"Fold {index + 1}/{folds}")
+            print(f"Podzbiór {index + 1}/{folds}")
             cnn = model.to(device)
             ce = nn.CrossEntropyLoss()
             optimizer = optim.Adam(cnn.parameters(), lr=lr)
@@ -105,8 +99,8 @@ def find_the_best_model(data, folds, lr=0.001, train_best_model=False):
             best_model_accuracy = model_accuracy
             best_model = model_obj
         end_time = time.time()
-        print(f"Training of model {model_obj.name} finished in {round(end_time-start_time, 2)} seconds. "
-              f"Average accuracy for this model is {round(model_accuracy, 2)}%")
+        print(f"Trening modelu {model_obj.name} zakończony w {round(end_time-start_time, 2)} sekund. "
+              f"Średnia dokładność dla tego modelu wyniosła {round(model_accuracy, 2)}%")
     if train_best_model:
         train_model(best_model, data, lr)
 
@@ -125,12 +119,14 @@ def train_model(model_obj, data, lr=0.001):
     start_time = time.time()
     best_model = None
     best_accuracy = 0
+    should_stop_in_3_epochs = False
+    stop_counter = 0
     train_dataset = SongsDataset(train_data)
     train_dl = DataLoader(train_dataset, batch_size=BATCH_SIZE)
     val_dataset = SongsDataset(val_data)
     val_dl = DataLoader(val_dataset, batch_size=BATCH_SIZE)
     for epoch in range(EPOCHS):
-        print(f"EPOCH {epoch + 1}/{EPOCHS}")
+        print(f"EPOKA {epoch + 1}/{EPOCHS}")
         losses = []
         for i, (pitches, keys) in enumerate(train_dl):
             pitches = pitches.to(device)
@@ -148,14 +144,20 @@ def train_model(model_obj, data, lr=0.001):
         validation_losses.append(validation_loss)
         accuracies.append(accuracy)
         if accuracy > best_accuracy:
-            print(f"Found best model with accuracy {round(accuracy, 2)}%")
+            print(f"Znaleziono najlepszy model z dokładnością wynoszącą {round(accuracy, 2)}%")
             best_accuracy = accuracy
             best_model = copy.deepcopy(cnn)
-        '''if len(accuracies) > 2 and accuracy < best_accuracy and accuracy < accuracies[epoch-1]:
-            print(f"Reached the stop criterion, thus stopping the training with best accuracy {round(best_accuracy, 2)}%")
-            break'''
+        if should_stop_in_3_epochs is True:
+            if stop_counter >= 3:
+                print(
+                    f"Osiągnięto kryterium stopu. Najlepsza dokładność wyniosła {round(best_accuracy, 2)}%")
+                break
+            else:
+                stop_counter = stop_counter + 1
+        elif len(accuracies) > 2 and accuracy < best_accuracy and accuracy < accuracies[epoch-1]:
+            should_stop_in_3_epochs = True
     end_time = time.time()
-    print(f"Training finished in {round(end_time-start_time, 2)} seconds.")
+    print(f"Trening zakończony w {round(end_time-start_time, 2)} sekund.")
     file_path = os.path.join(MODELS_PATH, 'net_{}.pth'.format(model_name))
     torch.save(best_model.state_dict(), file_path)
     plt.plot(accuracies)

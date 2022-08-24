@@ -5,13 +5,13 @@ import numpy as np
 from utils.functions import flatten_df_arr, split_set_randomly
 from constants import MIN_K_IMPROVEMENT
 import utils.validate_models as validate_models
+from sklearn.metrics import confusion_matrix
+import pandas as pd
 
 
 class KNeighbours():
-    model = None
     final_k = 0
     data = None
-    labels = None
     max_k = 0
     batches = 0
 
@@ -28,7 +28,7 @@ class KNeighbours():
         best_accuracy = 0
         best_score = 0
         for k in range(1, self.max_k + 1):
-            print(f'Testing k={k}')
+            print(f'Testowanie k={k}')
             knn = KNeighborsClassifier(k)
             k_score = 0
             k_accuracy = 0
@@ -48,14 +48,15 @@ class KNeighbours():
                 k_accuracy = k_accuracy + accuracy
             k_score = k_score / len(data_folds)
             k_accuracy = k_accuracy / len(data_folds)
-            print(f'Score for k={k} is {k_score}')
-            print(f'Accuracy for k={k} is {k_accuracy}')
-            if k_score - best_score > MIN_K_IMPROVEMENT:
+            print(f'Punktacja Mirex dla k={k} wyniosła {k_score}')
+            print(f'Dokładność dla k={k} wyniosła {k_accuracy}')
+            if k_accuracy - best_accuracy > MIN_K_IMPROVEMENT:
+                best_accuracy = k_accuracy
                 best_score = k_score
                 best_k = k
-                print(f'New best k was discovered. Score: {best_score}, best k number: {k}')
+                print(f'Nowy najlepszy parametr k został znaleziony. Dokładność: {best_accuracy}. Punktacja Mirex: {best_score}. Najlepsza wartość k: {k}')
         end_time = time.time()
-        print(f'Finding best hyperparameter k finished. Best k={best_k}. Process took {end_time - start_time} seconds.')
+        print(f'Poszukiwanie najlepszego hiperparametru k skończone. Najlepsze k={best_k}. Proces zajął {end_time - start_time} sekund.')
 
     def validate_knn(self, test_data):
         knn = KNeighborsClassifier(self.final_k)
@@ -67,5 +68,7 @@ class KNeighbours():
         predictions = knn.predict(test_features.tolist())
         evaluation_score = validate_models.count_evaluation_score(predictions, test_labels.tolist())
         accuracy = knn.score(test_features.tolist(), test_labels.tolist())
-        print(f'Accuracy: {accuracy}')
-
+        print(f'Dokładność dla zbioru testowego: {round(accuracy * 100, 2)}%')
+        print(f'Punktacja Mirex dla zbioru testowego: {round(evaluation_score * 100, 2)}%')
+        matrix = pd.DataFrame(confusion_matrix(test_labels, predictions, labels=np.arange(0, 24)))  # Matrix
+        print(matrix)

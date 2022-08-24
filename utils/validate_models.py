@@ -7,13 +7,13 @@ from utils.train import validate
 import numpy as np
 
 
-def validate_knn(data):
+def test_knn(data):
     start_time = time.time()
     training_data, test_data = train_test_split(data)
     k_neighbours = knn.KNeighbours(training_data, final_k=BEST_K)
     k_neighbours.validate_knn(test_data)
     end_time = time.time()
-    print(f'Validation done in {end_time - start_time} seconds')
+    print(f'Klasyfikacja dla zbioru testowego zakończona w {round(end_time - start_time,2)} sekund')
 
 
 def validate_random_song(data):
@@ -22,7 +22,7 @@ def validate_random_song(data):
     k_neighbours = knn.KNeighbours(training_data, final_k=BEST_K)
     k_neighbours.validate_knn(test_sample)
     end_time = time.time()
-    print(f'Validation done in {end_time - start_time} seconds')
+    print(f'Classification done in {end_time - start_time} seconds')
 
 
 '''
